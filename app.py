@@ -113,7 +113,7 @@ def main():
     chart_options = ["Word Cloud", "Bar Chart", "Line Chart", "Scatter Chart", "Pie Chart", "Radar Chart",
                      "Donut Chart", "Reversed Bar Chart"]
     selected_chart = st.sidebar.selectbox("Select Chart", chart_options)
-    if st.sidebar.button("Crawl"):
+    if st.sidebar.button("Crawl") or url:
         wordcloud_chart, bar_chart, line_chart, scatter_chart, pie_chart, radar_chart, donut_chart, bar2_chart = crawl(
             url)
 
