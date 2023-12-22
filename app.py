@@ -16,10 +16,10 @@ def crawl(url):
     soup = BeautifulSoup(response.content, 'html.parser')
     content = soup.get_text()
 
-  # 使用正则表达式去除HTML标签
-    content = re.sub(r'<.*?>', '',  content)
+    # 使用正则表达式去除HTML标签
+    content = re.sub(r'<.*?>', '', content)
     # 去除标点符号和多余空格
-    content = re.sub(r'[^\w\s]', '',  content)
+    content = re.sub(r'[^\w\s]', '', content)
     # 去除文本中所有的标点符号及空格只保留中文汉字
     content = re.sub(r'[^\u4e00-\u9fa5]', '',  content)
     # 自定义停用词列表
@@ -32,9 +32,7 @@ def crawl(url):
         if word not in stopwords and len(word) > 1:
             word_count[word] = word_count.get(word, 0) + 1
 
-    # 过滤长度为1或者词频为1的词
-    word_counts = { word: count for word, count in word_count.items() if count > 1 }
-    top_word = sorted(word_counts.items(), key=lambda x: x[1], reverse=True)[:20]
+    top_word = sorted(word_count.items(), key=lambda x: x[1], reverse=True)[:20]
 
     wordcloud_chart = (
         WordCloud()
@@ -45,45 +43,47 @@ def crawl(url):
     bar_chart = (
         Bar()
         .add_xaxis([word[0] for word in top_word])
-        .add_yaxis("频率",[word[1] for word in top_word])
+        .add_yaxis("频率", [word[1] for word in top_word])
         .set_global_opts(title_opts=opts.TitleOpts(title=' '))
     )
 
     line_chart = (
         Line()
         .add_xaxis([word[0] for word in top_word])
-        .add_yaxis("频率",[word[1] for word in top_word])
+        .add_yaxis("频率", [word[1] for word in top_word])
         .set_global_opts(title_opts=opts.TitleOpts(title=" "))
     )
 
     scatter_chart = (
         Scatter()
         .add_xaxis([word[0] for word in top_word])
-        .add_yaxis("频率",[word[1] for word in top_word])
+        .add_yaxis("频率", [word[1] for word in top_word])
         .set_global_opts(title_opts=opts.TitleOpts(title=" "))
     )
 
-
+    sorted_word = sorted(top_word, key=lambda x: x[1], reverse=True)
+    top_twenty = sorted_word[:20]
     labels = []
     frequencies = []
-    for word, freq in top_word:
+    for word, freq in top_twenty:
         labels.append(word)
         frequencies.append(freq)
 
     pie_chart = (
-          Pie(init_opts=opts.InitOpts(width="800px", height="600px"))
-        .add("", top_word)
+        Pie(init_opts=opts.InitOpts(width="700px", height="500px"))
+        .add("", sorted_word)
         .set_global_opts(title_opts=opts.TitleOpts(title=" "))
         .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
     )
 
     radar_chart = (
         Radar(init_opts=opts.InitOpts(width="700px", height="500px"))
-    .add_schema(schema=[
-        opts.RadarIndicatorItem(name=label, max_=max(frequencies)) for label in labels ])
-    .add("频率", [frequencies], linestyle_opts=opts.LineStyleOpts(width=1))
-    .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
-    .set_global_opts(title_opts=opts.TitleOpts(title=" "))
+        .add_schema(schema=[
+            opts.RadarIndicatorItem(name=label, max_=max(frequencies)) for label in labels
+        ])
+        .add("频率", [frequencies], linestyle_opts=opts.LineStyleOpts(width=1))
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+        .set_global_opts(title_opts=opts.TitleOpts(title=" "))
     )
 
     donut_chart = (
